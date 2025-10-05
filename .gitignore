@@ -1,0 +1,14 @@
+# 虚拟环境
+.venv/
+env/
+# 缓存文件
+__pycache__/
+*.pyc
+# 权重
+pre_trained_weights/
+log/
+# 其他临时文件
+*.log
+*.tmp
+*.pth
+*.ckpt

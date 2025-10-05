@@ -1,0 +1,3 @@
+du -sh /root/.local/share/Trash && rm -rf /root/.local/share/Trash
+
+source ~/.bashrc
