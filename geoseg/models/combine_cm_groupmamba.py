@@ -15,9 +15,9 @@ import warnings
 
 # from .pvtv2 import *
 try:
-    from .groupmamba import groupmamba_small
+    from .groupmamba import groupmamba_tiny
 except:
-    from groupmamba import groupmamba_small
+    from groupmamba import groupmamba_tiny
 
 # from .Res2Net import *
 from torchvision import models
@@ -67,7 +67,7 @@ class combine_cm(nn.Module):
                  mid_channel=64,
                  depths=[2, 2, 9, 2],
                  drop_path_rate=0.1,
-                 load_ckpt_path='/root/EB-TDFNet/pre_trained_weights/groupmamba_small_ema.pth',
+                 load_ckpt_path='/root/EB-TDFNet/pre_trained_weights/groupmamba_tiny_ema.pth',
                  pretrained=True
                  ):
         super().__init__()
@@ -78,8 +78,8 @@ class combine_cm(nn.Module):
 
         # vmamba
 
-        self.backbone = groupmamba_small()  # [64, 128, 348, 512]
-        path = '/root/EB-TDFNet/pre_trained_weights/groupmamba_small_ema.pth'
+        self.backbone = groupmamba_tiny()  # [64, 128, 348, 512]
+        path = '/root/EB-TDFNet/pre_trained_weights/groupmamba_tiny_ema.pth'
         save_model = torch.load(path)
         model_dict = self.backbone.state_dict()
         state_dict = {k: v for k, v in save_model.items() if k in model_dict.keys()}
@@ -87,10 +87,10 @@ class combine_cm(nn.Module):
         self.backbone.load_state_dict(model_dict)
 
         # v-mamba
-        self.Translayer_1 = BasicConv2d(1 * mid_channel, 1 * mid_channel, 1)
-        self.Translayer_2 = BasicConv2d(2 * mid_channel, 2 * mid_channel, 1)
-        self.Translayer_3 = BasicConv2d(  348          , 4 * mid_channel, 1)
-        self.Translayer_4 = BasicConv2d(8 * mid_channel, 8 * mid_channel, 1)
+        # self.Translayer_1 = BasicConv2d(1 * mid_channel, 1 * mid_channel, 1)
+        # self.Translayer_2 = BasicConv2d(2 * mid_channel, 2 * mid_channel, 1)
+        # self.Translayer_3 = BasicConv2d(  348          , 4 * mid_channel, 1)
+        # self.Translayer_4 = BasicConv2d(  448          , 8 * mid_channel, 1)
 
 
         # 单
@@ -107,8 +107,8 @@ class combine_cm(nn.Module):
 
         self.Translayer_11 = BasicConv2d(1 * mid_channel, mid_channel, 1)
         self.Translayer_12 = BasicConv2d(2 * mid_channel, mid_channel, 1)
-        self.Translayer_13 = BasicConv2d(4 * mid_channel, mid_channel, 1)
-        self.Translayer_14 = BasicConv2d(8 * mid_channel, mid_channel, 1)
+        self.Translayer_13 = BasicConv2d(348, mid_channel, 1)
+        self.Translayer_14 = BasicConv2d(448, mid_channel, 1)
 
         self.deconv = nn.ConvTranspose2d(mid_channel, mid_channel, kernel_size=4, stride=2, padding=1, bias=False)
         self.seg_outs = nn.Conv2d(mid_channel, mid_channel, 1, 1)
@@ -159,16 +159,16 @@ class combine_cm(nn.Module):
         #  torch.Size([2, 64, 128, 128]) torch.Size([2, 128, 64, 64]) torch.Size([2, 348,32, 32]) torch.Size([2, 512, 16, 16])
         
 
-        m4 = self.Translayer_4(output[3])
-        m3 = self.Translayer_3(output[2])
-        m2 = self.Translayer_2(output[1])
-        m1 = self.Translayer_1(output[0])
+        fuse4 = self.Translayer_14(output[3])
+        fuse3 = self.Translayer_13(output[2])
+        fuse2 = self.Translayer_12(output[1])
+        fuse1 = self.Translayer_11(output[0])
 
 
-        fuse1 = self.Translayer_11(m1)
-        fuse2 = self.Translayer_12(m2)
-        fuse3 = self.Translayer_13(m3)
-        fuse4 = self.Translayer_14(m4)
+        # fuse1 = self.Translayer_11(m1)
+        # fuse2 = self.Translayer_12(m2)
+        # fuse3 = self.Translayer_13(m3)
+        # fuse4 = self.Translayer_14(m4)
         y31 = self.deconv(fuse4) + fuse3
         y21 = self.deconv(y31) + fuse2
         y11 = self.deconv(y21) + fuse1

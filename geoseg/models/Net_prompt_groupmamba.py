@@ -664,7 +664,6 @@ class Decoder(nn.Module):
         self.init_weight()
 
     def forward(self, x, res1, res2, res3, res4, h, w):
-
         # EGA1
         # print('res4.shape',res4.shape)  # res4: torch.Size([2, 768, 16, 16])
         # print('x.shape',x.shape)      # torch.Size([1, 64, 14, 14])

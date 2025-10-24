@@ -19,7 +19,7 @@ accumulate_n = 1
 num_classes = len(CLASSES)
 classes = CLASSES
 
-weights_name = "mass-new-AFE-prompt-EGA2-groupmamba-scheduler"           
+weights_name = "mass-new-prompt2-groupmamba-processed-attnV2"           
 weights_path = "/root/EB-TDFNet/log/mass/{}".format(weights_name)
 test_weights_name = "last"
 log_name = "/root/EB-TDFNet/log/mass/{}".format(weights_name)
@@ -35,7 +35,7 @@ pretrained_ckpt_path = None
 load_ckpt_path='/root/EB-TDFNet/pre_trained_weights/groupmamba_small_ema.pth',
 # load_ckpt_path = None
 resume_ckpt_path = None
-# resume_ckpt_path = '/root/EB-TDFNet/log/mass/mass-new-AFE-res2net-prompt-EGA2/last.ckpt'
+# resume_ckpt_path = '/root/EB-TDFNet/log/mass/mass-new-prompt-groupmamba-processed-attnV2/last.ckpt'
 
 # from geoseg.models.TDFNet import TDFNet
 # net = TDFNet(input_channels=3, 
@@ -48,7 +48,7 @@ resume_ckpt_path = None
 # if load_ckpt_path is not None:
 #     net.load_from()
 # net = TDFNet()
-from geoseg.models.AFENet_prompt_EGA2_groupmamba import AFENet
+from geoseg.models.Net_prompt2_groupmamba_attnV2 import AFENet
 net = AFENet()
 
 
@@ -84,5 +84,5 @@ base_optimizer = torch.optim.AdamW(net_params, lr=lr, weight_decay=weight_decay)
 
 optimizer = Lookahead(base_optimizer,k=5,alpha=0.5)
 
-# lr_scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(optimizer, T_0=15, T_mult=2)
-lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.5)  # EGA2-prompt-groupmamba专属学习率调度器
+lr_scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(optimizer, T_0=15, T_mult=2)
+# lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.5)  # EGA2-prompt-groupmamba专属学习率调度器

@@ -125,6 +125,10 @@ def main():
 if __name__ == "__main__":
     main()
 
-# python building_seg_test.py -c ./config/mass/afeNet.py -o ./results/mass_afe_groupmamba/tdfnet --rgb -t 'lr'
+# python building_seg_test.py -c ./config/mass/afeNet.py -o ./results/mass_prompt2_groupmamba_attn2/tdfnet --rgb -t 'lr'
 # python building_seg_test.py -c ./config/mass/tdfnet.py -o ./results/mass_groupmamba/tdfnet --rgb -t 'lr'
 # python building_seg_test.py -c ./config/mass/afaMamba.py -o ./results/mass_pvt/afaMamba --rgb -t 'lr'
+
+# python building_seg_test.py -c ./config/whu/afeNet.py -o ./results/whu_prompt_groupmamba_attn2/tdfnet --rgb -t 'lr'
+
+# python building_seg_test.py -c ./config/inria/afeNet.py -o ./results/inria_prompt_groupmamba_attn2/tdfnet --rgb -t 'lr'
