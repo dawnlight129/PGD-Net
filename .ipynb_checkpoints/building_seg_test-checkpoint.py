@@ -54,6 +54,7 @@ def main():
         os.path.join(config.weights_path, config.test_weights_name + '.ckpt'), config=config)
     model.cuda()   # 测试时也需要cuda
     model.eval()
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     evaluator = Evaluator(num_class=config.num_classes)
     evaluator.reset()
     if args.tta == "lr":
@@ -120,10 +121,46 @@ def main():
         print('F1_{}:{}, IOU_{}:{}'.format(class_name, class_f1, class_name, class_iou))
     print('F1:{}, mIOU:{}, OA:{}, P:{}, R:{}'.format(np.nanmean(f1_per_class[:-1]), np.nanmean(iou_per_class[:-1]), OA,
                                                      np.nanmean(precision[:-1]), np.nanmean(recall[:-1])))
-
+    
 if __name__ == "__main__":
     main()
 
-# python building_seg_test.py -c ./config/mass/afeNet.py -o ./results/mass_afe_vmamba/tdfnet --rgb -t 'lr'
-# python building_seg_test.py -c ./config/mass/tdfnet.py -o ./results/mass_pvt2/tdfnet --rgb -t 'lr'
-# python building_seg_test.py -c ./config/mass/afaMamba.py -o ./results/mass_pvt/afaMamba --rgb -t 'lr'
+# python building_seg_test.py -c ./config/mass/afeNet.py -o ./results/mass_prompt_groupmamba_attn2_TB2/tdfnet --rgb -t 'lr'
+# python building_seg_test.py -c ./config/mass/afeNet.py -o ./results/mass_prompt_groupmamba_attn2_DSGM_PGIM2/tdfnet --rgb -t 'lr'
+# python building_seg_test.py -c ./config/mass/afeNet.py -o ./results/mass_prompt_groupmamba_attn2_DSGM_PGIM_moh/tdfnet --rgb -t 'lr'
+# python building_seg_test.py -c ./config/mass/afeNet.py -o ./results/mass_prompt_groupmamba_attn2_DSGM_PGIM_loam2/tdfnet --rgb -t 'lr'
+# python building_seg_test.py -c ./config/mass/afeNet.py -o ./results/mass_prompt_groupmamba_attn2_DSGM_noTB_mixformer/tdfnet --rgb -t 'lr'
+# python building_seg_test.py -c ./config/mass/afeNet.py -o ./results/mass_prompt_groupmamba_attn2_DSGM_noTB_mixformer_efficent/tdfnet --rgb -t 'lr'
+# python building_seg_test.py -c ./config/mass/afeNet.py -o ./results/mass_prompt_groupmamba_attn2_DSGM_noTB_mixformer_RMSNorm/tdfnet --rgb -t 'lr'
+    
+
+# 新
+# python building_seg_test.py -c ./config/mass/afeNet.py -o ./results/PGD-Net/PGD-net --rgb -t 'lr'
+    
+# python building_seg_test.py -c ./config/mass/afeNet.py -o ./results/mass_new_prompt_groupmamba_attn2/tdfnet --rgb -t 'lr'
+# python building_seg_test.py -c ./config/mass/afeNet.py -o ./results/mass_prompt2_vmamba_attn2/tdfnet --rgb -t 'lr'
+# python building_seg_test.py -c ./config/mass/afeNet.py -o ./results/mass_new_prompt_groupmamba_attn3/tdfnet --rgb -t 'lr'
+
+
+
+# whu
+# python building_seg_test.py -c ./config/whu/afeNet.py -o ./results/whu_prompt_groupmamba_attn2/tdfnet --rgb -t 'lr'
+# python building_seg_test.py -c ./config/whu/afeNet.py -o ./results/whu_prompt_groupmamba_attn2/tdfnet-addmass --rgb -t 'lr'
+# python building_seg_test.py -c ./config/whu/afeNet.py -o ./results/whu-new-prompt-groupmamba-processed-attnV2-DSGM-noTB-mixformer-inria --rgb -t 'lr'
+
+
+# inria
+# python building_seg_test.py -c ./config/inria/afeNet.py -o ./results/inria_prompt_groupmamba_attn2/tdfnet --rgb -t 'lr'
+# python building_seg_test.py -c ./config/inria/afeNet.py -o ./results/inria_prompt_groupmamba_attn2_DSGM_noTB_mixformer/tdfnet --rgb -t 'lr'
+
+# python building_seg_test.py -c ./config/inria/afeNet.py -o ./results/mass_test_inria_prompt_groupmamba_attn2_DSGM_noTB_mixformer/tdfnet --rgb -t 'lr'
+# python building_seg_test.py -c ./config/inria/afeNet.py -o ./results/inria_PGD-Net_noMOS/tdfnet --rgb -t 'lr'
+
+
+# python building_seg_test.py -c ./config/jm/afeNet.py -o ./results/jm_prompt_groupmamba_attn2/tdfnet --rgb -t 'lr'
+
+
+
+
+# Ablation
+# python building_seg_test.py -c ./config/mass/Ablation_afeNet.py -o ./results/Ablation/Ablation_groupmamba_Loam/afenet --rgb -t 'lr'

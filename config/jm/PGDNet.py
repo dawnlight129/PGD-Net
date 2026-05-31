@@ -1,6 +1,6 @@
 from torch.utils.data import DataLoader
 from geoseg.losses import *
-from geoseg.datasets.mass import *
+from geoseg.datasets.JM_dataset import *
 # from catalyst.contrib.nn import Lookahead
 from pytorch_optimizer import Lookahead
 from catalyst import utils
@@ -19,43 +19,27 @@ accumulate_n = 1
 num_classes = len(CLASSES)
 classes = CLASSES
 
-# weights_name = "mass-net-prompt-groupmamba-processed-attnV3-DSGM-noTB-mixformer"           
-# weights_path = "/root/EB-TDFNet/log/mass/{}".format(weights_name)
-# test_weights_name = "last"
-# log_name = "/root/EB-TDFNet/log/mass/{}".format(weights_name)
-
-weights_name = "mass-new-prompt-groupmamba-processed-attnV2-DSGM-noTB-mixformer"       
-weights_path = "/root/autodl-tmp/log/mass/{}".format(weights_name)
-test_weights_name = "mass-new-prompt-groupmamba-processed-attnV2-DSGM-noTB-mixformer-v1"
-log_name = "/root/EB-TDFNet/log/mass/{}".format(weights_name)
-
+weights_name = "jm-PGDNet"           
+weights_path = "/root/PGDNet/log/jm/{}".format(weights_name)
+test_weights_name = "jm-PGDNet"
+log_name = "/root/PGDNet/log/jm/{}".format(weights_name)
 monitor = 'val_mIoU'
 monitor_mode = 'max'
-save_top_k = 2
+save_top_k = 1
 save_last = True
 check_val_every_n_epoch = 1
 gpus = [0]
 strategy = None
-# pretrained_ckpt_path = "/root/autodl-tmp/log/mass/mass-new-prompt-groupmamba-processed-attnV2-DSGM-noTB-mixformermass-new-prompt-groupmamba-processed-attnV2-DSGM-noTB-mixformer-v1.ckpt"
+# pretrained_ckpt_path = "/root/PGDNet/pre_trained_weights/whu-TDFNet-vgg16-v9192.ckpt"
 pretrained_ckpt_path = None
-load_ckpt_path='/root/EB-TDFNet/pre_trained_weights/groupmamba_small_ema.pth',
+load_ckpt_path='/root/PGDNet/pre_trained_weights/groupmamba_small_ema.pth',
 # load_ckpt_path = None
 resume_ckpt_path = None
+# resume_ckpt_path = '/root/PGDNet/log/mass/mass-new-prompt-groupmamba-processed-attnV2/last.ckpt'
 
-# from geoseg.models.TDFNet import TDFNet
-# net = TDFNet(input_channels=3, 
-#                num_classes=2,
-#                mid_channel = 96,
-#                depths=[2, 2, 9, 2], 
-#                drop_path_rate=0.1,
-#                load_ckpt_path='/root/EB-TDFNet/pre_trained_weights/vmamba_tiny_e292.pth', 
-#                pretrained = True)
-# if load_ckpt_path is not None:
-#     net.load_from()
-# net = TDFNet()
 
-from geoseg.models.Net_prompt_groupmamba_attnV2_DSGM_noTB_mixformer import AFENet
-net = AFENet()
+from geoseg.models.PGDNet import PGDNet
+net = PGDNet()
 
 
 # define the loss
@@ -65,9 +49,9 @@ use_aux_loss = False
 # define the dataloader
 
 
-train_dataset = MassBuildDataset(data_root="/root/autodl-tmp/Massa_512/train/", mode='train', mosaic_ratio=0.25, transform=get_training_transform())
-val_dataset = MassBuildDataset(data_root="/root/autodl-tmp/Massa_512/val/", mode='val', transform=get_validation_transform())
-test_dataset = MassBuildDataset(data_root="/root/autodl-tmp/Massa_512/test/", mode='val', transform=get_validation_transform())
+train_dataset = JMBuildingDataset(data_root="/root/autodl-tmp/JMregion/train/", mode='train', mosaic_ratio=0.25, transform=train_aug)
+val_dataset = JMBuildingDataset(data_root="/root/autodl-tmp/JMregion/val/", mode='val', transform=val_aug)
+test_dataset = JMBuildingDataset(data_root="/root/autodl-tmp/JMregion/test/", mode='val', transform=val_aug)
 
 train_loader = DataLoader(dataset=train_dataset,
                           batch_size=train_batch_size,

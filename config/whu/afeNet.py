@@ -13,16 +13,18 @@ train_batch_size = 4
 val_batch_size = 4
 lr = 1e-3
 weight_decay = 0.0025 
-backbone_lr = 1e-3
+backbone_lr = 5e-4  # 1e-3
 backbone_weight_decay = 0.0025
 accumulate_n = 1
 num_classes = len(CLASSES)
 classes = CLASSES
 
-weights_name = "whu-new-prompt-groupmamba-processed-attnV2"
-weights_path = "/root/EB-TDFNet/log/whu/{}".format(weights_name)
-test_weights_name = "last"
-log_name = "/root/EB-TDFNet/log/whu/{}".format(weights_name)
+
+weights_name = "WHU-PGDNet"       
+weights_path = "/root/autodl-tmp/log/whu/{}".format(weights_name)
+test_weights_name = "WHU-PGDNet"
+log_name = "/root/PGDNet/log/whu/{}".format(weights_name)
+
 monitor = 'val_mIoU'
 monitor_mode = 'max'
 save_top_k = 1
@@ -30,12 +32,13 @@ save_last = True
 check_val_every_n_epoch = 1
 gpus = [0]
 strategy = None
-pretrained_ckpt_path = None
-load_ckpt_path='/root/EB-TDFNet/pre_trained_weights/groupmamba_small_ema.pth',
+pretrained_ckpt_path = '/root/PGDNet/log/inria/inria-new-prompt-groupmamba-attnV2-DSGM-noTB-mixformer/inria-new-prompt-groupmamba-attnV2-DSGM-noTB-mixformer.ckpt'
+load_ckpt_path='/root/PGDNet/pre_trained_weights/groupmamba_small_ema.pth',
 resume_ckpt_path = None
+# resume_ckpt_path = '/root/PGDNet/log/mass/mass-new-prompt-groupmamba-processed-attnV2/mass-new-prompt-groupmamba-processed-attnV2.ckpt'
 
-from geoseg.models.Net_prompt_groupmamba_attnV2 import AFENet
-net = AFENet()
+from geoseg.models.PGDNet import PGDNet
+net = PGDNet()
 
 
 # define the loss

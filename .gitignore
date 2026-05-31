@@ -1,14 +1,67 @@
-# 虚拟环境
-.venv/
-env/
-# 缓存文件
+# # 虚拟环境
+# .venv/
+# env/
+# # 缓存文件
+# __pycache__/
+# *.pyc
+# # 权重
+# pre_trained_weights/
+# log/
+# # 其他临时文件
+# *.log
+# *.tmp
+# *.pth
+# *.ckpt
+
+
+# Python 缓存文件
 __pycache__/
 *.pyc
-# 权重
+*.pyo
+*.pyd
+*.pyc~
+.pytest_cache/
+
+# Jupyter Notebook 检查点
+.ipynb_checkpoints/
+
+# 配置/临时文件（按需忽略）
+config/*.yaml
+config/*.yml
+
+# 数据集与预训练权重（避免上传大文件）
+datasets/
 pre_trained_weights/
-log/
+*.pth
+*.pt
+*.bin
+
+# 日志、输出、模型保存目录
+logs/
+runs/
+checkpoints/
+outputs/
+results/
+
+# 编辑器/系统文件
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# 环境与依赖
+venv/
+env/
+*.env
+.env.local
+requirements.txt~
+
 # 其他临时文件
 *.log
 *.tmp
-*.pth
-*.ckpt
+*.bak
+*.zip
+*.tar.gz

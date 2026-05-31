@@ -58,25 +58,16 @@ class MassBuildDataset(Dataset):
     def __len__(self):
         return len(self.img_ids)
 
-#     def get_img_ids(self, data_root, img_dir, mask_dir):
-#         img_filename_list = os.listdir(osp.join(data_root, img_dir))
-#         mask_filename_list = os.listdir(osp.join(data_root, mask_dir))
-#         print('打印图片和mask长度：',len(img_filename_list),len(mask_filename_list))
-        
-#         assert len(img_filename_list) == len(mask_filename_list)
-#         img_ids = [str(id.split('.')[0]) for id in mask_filename_list]
-#         return img_ids
 
 
     def get_img_ids(self, data_root, img_dir, mask_dir):
         img_path = osp.join(data_root, img_dir)
         mask_path = osp.join(data_root, mask_dir)
 
-        # 定义有效文件后缀（根据你的数据集格式调整，如图像是.jpg，掩码是.png）
+        # 定义有效文件后缀
         img_extensions = ['.jpg', '.jpeg', '.png']
-        mask_extensions = ['.png', '.jpg', '.jpeg']  # 掩码通常用png，也可根据实际调整
+        mask_extensions = ['.png', '.jpg', '.jpeg']  
 
-        # 过滤仅保留有效格式的图像/掩码文件
         img_filename_list = [f for f in os.listdir(img_path) 
                              if any(f.lower().endswith(ext) for ext in img_extensions)]
         mask_filename_list = [f for f in os.listdir(mask_path) 
@@ -86,19 +77,16 @@ class MassBuildDataset(Dataset):
         assert len(img_filename_list) == len(mask_filename_list), \
             f"有效图像数量{len(img_filename_list)}与有效掩码数量{len(mask_filename_list)}不匹配"
 
-        # 检查文件名前缀是否一一对应（去掉后缀后对比）
         img_basenames = [os.path.splitext(f)[0] for f in img_filename_list]
         mask_basenames = [os.path.splitext(f)[0] for f in mask_filename_list]
 
-        # 找出仅在图像中存在的文件（缺掩码）
         missing_mask = set(img_basenames) - set(mask_basenames)
-        # 找出仅在掩码中存在的文件（缺图像）
         missing_img = set(mask_basenames) - set(img_basenames)
 
         if missing_mask:
-            print(f"以下图像缺少对应的掩码：{missing_mask}")
+            print(f"{missing_mask}")
         if missing_img:
-            print(f"以下掩码缺少对应的图像：{missing_img}")
+            print(f"{missing_img}")
         assert not missing_mask and not missing_img, "存在文件名不匹配的文件"
         img_ids = [str(id.split('.')[0]) for id in mask_filename_list]
         

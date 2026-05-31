@@ -22,16 +22,14 @@ os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 torch.cuda.empty_cache()
 
 
-# 新增：小目标形态学后处理函数
+# MOS
 def post_process_small_object(mask, kernel_size=3):
-    """对单张预测掩码进行形态学优化（输入输出均为numpy数组）"""
+    """对单张预测掩码进行形态学优化"""
     if mask.ndim != 2:
         raise ValueError("输入掩码必须是2D数组（H, W）")
     mask = mask.astype(np.uint8) * 255
     kernel = np.ones((kernel_size, kernel_size), np.uint8)
-    # 膨胀：连接小目标的断裂区域
     mask = cv2.dilate(mask, kernel, iterations=1)
-    # 腐蚀：消除膨胀带来的多余边缘
     mask = cv2.erode(mask, kernel, iterations=1)
     mask = (mask > 0).astype(np.uint8)  # 二值化
     return mask
@@ -65,8 +63,7 @@ class Supervision_Train(pl.LightningModule):
 
         self.metrics_train = Evaluator(num_class=config.num_classes)
         self.metrics_val = Evaluator(num_class=config.num_classes)
-        # 新增：可配置的形态学核大小（根据小目标尺寸调整）
-        self.morph_kernel_size = config.get("morph_kernel_size", 3)  # 从配置文件读取，默认3x3
+        self.morph_kernel_size = config.get("morph_kernel_size", 3) 
 
     def forward(self, x):
         # only net is used in the prediction/inference
@@ -91,7 +88,7 @@ class Supervision_Train(pl.LightningModule):
         pre_mask = nn.Softmax(dim=1)(main_pred)
         pre_mask = pre_mask.argmax(dim=1)
 
-        # 新增：对每张预测掩码进行形态学后处理
+        # 对每张预测掩码进行形态学后处理
         processed_pre_mask = []
         for i in range(pre_mask.shape[0]):
             mask_np = pre_mask[i].cpu().numpy()
@@ -157,7 +154,7 @@ class Supervision_Train(pl.LightningModule):
         loss = torch.stack([x["loss"] for x in outputs]).mean()
         log_dict = {"train_loss": loss, 'train_mIoU': mIoU, 'train_F1': F1, 'train_OA': OA}
         self.log_dict(log_dict, prog_bar=True)
-        empty_cache()  # 清理显存缓存，释放预留的未使用内存
+        empty_cache()  
 
     def validation_step(self, batch, batch_idx):
         img, mask = batch['img'], batch['gt_semantic_seg']
@@ -165,7 +162,6 @@ class Supervision_Train(pl.LightningModule):
         pre_mask = nn.Softmax(dim=1)(prediction)
         pre_mask = pre_mask.argmax(dim=1)
 
-        # 新增：验证阶段同样应用形态学优化（保持与训练一致）
         processed_pre_mask = []
         for i in range(pre_mask.shape[0]):
             mask_np = pre_mask[i].cpu().numpy()
@@ -271,12 +267,12 @@ def main():
 if __name__ == "__main__":
     main()
 
-# python train_supervision.py -c ./config/mass/tdfnet.py
-# python train_supervision.py -c ./config/mass/afaMamba.py
-# python train_supervision.py -c ./config/mass/afeNet.py
+# massa
+# python train_supervision.py -c ./config/mass/PGDNet.py
 
 # whu
-# python train_supervision.py -c ./config/whu/afeNet.py
+# python train_supervision.py -c ./config/whu/PGDNet.py
 
 # inria
-# python train_supervision.py -c ./config/inria/afeNet.py
+# python train_supervision.py -c ./config/inria/PGDNet.py
+
