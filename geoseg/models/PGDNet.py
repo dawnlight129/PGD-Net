@@ -350,33 +350,7 @@ class TransformerBlock(nn.Module):
 
         return x
 
-class MSLP(nn.Module):
-    def __init__(self, dim):
-        super().__init__()
-        # 1. 取消注释，定义self.dim属性（解决NameError）
-        self.dim = dim  
-        # 确保通道数可拆分为3份（适配多尺度深度卷积）
-        assert self.dim > 0, "dim需为正整数"
 
-        # IDConv（输出通道为dim*3，用于拆分3个尺度）
-        self.id_conv = nn.Conv2d(self.dim, self.dim * 3, kernel_size=1, padding=0, bias=False)
-        # 多尺度深度卷积（输入通道为dim）
-        self.dw1 = nn.Conv2d(self.dim, self.dim, kernel_size=1, groups=self.dim, padding=0, bias=False)
-        self.dw3 = nn.Conv2d(self.dim, self.dim, kernel_size=3, groups=self.dim, padding=1, bias=False)
-        self.dw5 = nn.Conv2d(self.dim, self.dim, kernel_size=5, groups=self.dim, padding=2, bias=False)
-        # 全连接层（输入通道为dim*3，对应拼接后的通道数）
-        self.fc1 = nn.Conv2d(self.dim * 3, self.dim * 2, kernel_size=1, padding=0, bias=False)
-        self.gelu = nn.GELU()
-        self.fc2 = nn.Conv2d(self.dim * 2, self.dim, kernel_size=1, padding=0, bias=False)
-
-    def forward(self, x):
-        # x: (B, self.dim, H, W)
-        x_id = self.id_conv(x)  # 输出：(B, self.dim*3, H, W)
-        x_split = torch.split(x_id, self.dim, dim=1)  # 拆分为3个(B, self.dim, H, W)的张量
-        x1, x3, x5 = self.dw1(x_split[0]), self.dw3(x_split[1]), self.dw5(x_split[2])
-        x_concat = torch.cat([x1, x3, x5], dim=1)
-        x_fc = self.fc2(self.gelu(self.fc1(x_concat)))
-        return x + x_fc
     
 class MixFormer(nn.Module):
     def __init__(self, dim, num_heads, ffn_expansion_factor,bias, LayerNorm_type):
@@ -447,28 +421,6 @@ class PromptGenBlock(nn.Module):
         prompt = self.conv3x3(prompt)
         print("-------------------")
         return prompt
-    
-#     def forward(self,x):
-#         B,C,H,W = x.shape
-#         emb = x.mean(dim=(-2,-1))
-        
-#         # 生成 Prompt 权重
-#         prompt_weights1 = F.softmax(self.linear_layer(emb),dim=1)
-#         local_weights = self.local_weight(x)
-#         local_weights = rearrange(local_weights, 'b d 1 1 -> b d')
-#         prompt_weights2 = F.softmax(self.linear_layer(local_weights),dim=1)
-#         # 生成 Prompt
-#         prompt1 = prompt_weights1.unsqueeze(-1).unsqueeze(-1).unsqueeze(-1) * self.prompt_param.unsqueeze(0).repeat(B,1,1,1,1,1).squeeze(1) 
-#         prompt2 = prompt_weights2.unsqueeze(-1).unsqueeze(-1).unsqueeze(-1) * self.prompt_param.unsqueeze(0).repeat(B,1,1,1,1,1).squeeze(1)
-#         prompt = prompt1 + prompt2
-#         # 对所有 Prompt 进行加权求和，生成最终的 Prompt
-#         prompt = torch.sum(prompt,dim=1)
-#         # 调整 Prompt 的空间大小
-#         prompt = F.interpolate(prompt,(H,W),mode="bilinear")
-#         # 进一步处理 Prompt
-#         prompt = self.conv3x3(prompt)
-
-#         return prompt
 
 
 class SpatialAttention(nn.Module):
@@ -563,8 +515,6 @@ class Decoder(nn.Module):
         # TB1
         # inp_dec_level3 = self.TB1(inp_dec_level3)
         inp_dec_level3 = self.Block1(inp_dec_level3)
-
-
 
         # EGA2
         out_dec_level3 = self.conv2(inp_dec_level3)
