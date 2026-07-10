@@ -526,16 +526,6 @@ class Decoder(nn.Module):
             self.prompt3 = PromptGenBlock(prompt_dim=256,prompt_len=5,prompt_size = 32,lin_dim = 256)
 
 
-        self.noise_level3 = MixFormer(dim=int(decode_channels * 2**3), num_heads=heads[3], ffn_expansion_factor=ffn_expansion_factor, bias=bias, LayerNorm_type=LayerNorm_type)
-        self.reduce_noise_level3 = nn.Conv2d(int(decode_channels * 2**3), int(decode_channels * 2**2), kernel_size=1, bias=bias)
-        
-        self.noise_level2 = MixFormer(dim=int(decode_channels * 2**2), num_heads=heads[2], ffn_expansion_factor=ffn_expansion_factor, bias=bias, LayerNorm_type=LayerNorm_type)
-        self.reduce_noise_level2 = nn.Conv2d(int(decode_channels * 2**2), int(decode_channels * 2**1), kernel_size=1, bias=bias)
-        
-        self.noise_level1 = MixFormer(dim=int(decode_channels * 2**1), num_heads=heads[1], ffn_expansion_factor=ffn_expansion_factor, bias=bias, LayerNorm_type=LayerNorm_type)
-        self.reduce_noise_level1 = nn.Conv2d(int(decode_channels * 2**1), int(decode_channels * 2**0), kernel_size=1, bias=bias)
-
-
         self.up4 = nn.Conv2d(decode_channels * 2 ** 3, decode_channels * 2 ** 2, 1)
         self.up3 = nn.Conv2d(decode_channels * 2 ** 2, decode_channels * 2 ** 1, 1)
         self.up2 = nn.Conv2d(decode_channels * 2 ** 1, decode_channels * 2 ** 0, 1)
