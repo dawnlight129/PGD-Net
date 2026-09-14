@@ -37,7 +37,6 @@ pre_trained_weights/
 *.bin
 
 # 日志、输出、模型保存目录
-logs/
 runs/
 checkpoints/
 outputs/
